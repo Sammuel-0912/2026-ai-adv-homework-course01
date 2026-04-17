@@ -12,7 +12,7 @@
 | 模擬付款（pending → paid/failed）| ✅ 完成 |
 | 管理員商品 CRUD | ✅ 完成 |
 | 管理員訂單查詢 | ✅ 完成 |
-| ECPay 金流整合 | ❌ 未實作（變數已設定，待開發）|
+| ECPay 金流整合（AIO + QueryTradeInfo）| ✅ 完成 |
 | 商品搜尋/篩選 | ❌ 未實作 |
 | Email 通知 | ❌ 未實作 |
 | 訂單取消 | ❌ 未實作 |
@@ -135,13 +135,97 @@
 
 **PATCH /api/orders/:id/pay**
 
-模擬付款結果（ECPay 金流尚未整合，使用模擬機制）：
+模擬付款端點，可在不使用綠界金流的情況下直接變更訂單狀態（測試用途）：
 - 必填欄位：`action`（`"success"` 或 `"fail"`）
-- 只有 `status = 'pending'` 的訂單可執行付款操作
+- 只有 `status = 'pending'` 的訂單可執行
 - `action: "success"` → status 更新為 `'paid'`
 - `action: "fail"` → status 更新為 `'failed'`
 - 狀態已非 pending（重複付款）→ 400 `VALIDATION_ERROR`
 - 只能操作自己的訂單
+
+> **注意：** 此端點為輔助測試工具，正式付款流程請使用 ECPay AIO 金流（見下方章節）。
+
+---
+
+## ECPay 金流整合
+
+### 架構說明
+
+本專案採用綠界 **全方位金流 AIO（CMV-SHA256 協議）**。由於專案運行於本地端，ECPay 伺服器無法主動呼叫 `ReturnURL`（Server-to-Server callback），因此付款確認採用以下機制：
+
+1. **`OrderResultURL`（主要）**：付款完成後，ECPay 透過用戶瀏覽器 POST 結果至本機 `/ecpay/order-result`，本地環境可正常接收並即時更新訂單狀態。
+2. **`QueryTradeInfo` 主動查詢（備用）**：前端提供「查詢付款狀態」按鈕，可隨時呼叫 ECPay API 確認付款結果。
+
+### 付款流程
+
+```
+用戶點擊「前往綠界付款」
+→ POST /api/ecpay/checkout/:orderId（附 JWT）
+→ 後端計算 CheckMacValue，回傳 AIO 表單參數
+→ 前端動態建立 form 並 submit 至 ECPay
+→ 用戶在綠界付款頁完成付款（信用卡 / ATM / 超商等）
+→ ECPay 由用戶瀏覽器 POST 結果至 /ecpay/order-result（OrderResultURL）
+→ 後端驗證 CheckMacValue，更新訂單狀態
+→ 302 redirect 至 /orders/:id?payment=success 或 ?payment=failed
+```
+
+### API 端點行為描述
+
+**POST /api/ecpay/checkout/:orderId**（需 JWT）
+
+啟動付款，產生 AIO 表單參數回傳給前端：
+- 訂單必須屬於目前登入用戶
+- 訂單 `status` 必須為 `'pending'`；否則 → 400 `INVALID_STATUS`
+- 每次呼叫都會產生新的 `MerchantTradeNo`（英數字 20 碼，來自 UUID 去除連字號），並更新至 `orders.merchant_trade_no`
+- `ItemName` 超過 200 字元時自動截斷，避免 CheckMacValue 因 UTF-8 截斷錯誤
+- 回傳：`{ action, method, params }` — 前端動態建立 form 提交即可
+- 若訂單不存在 → 404 `NOT_FOUND`
+
+**POST /api/ecpay/query/:orderId**（需 JWT）
+
+主動向綠界查詢付款狀態：
+- 呼叫 `/Cashier/QueryTradeInfo/V5` API
+- `TradeStatus === '1'` 表示付款成功，自動將訂單 status 更新為 `'paid'`
+- 若訂單尚未呼叫過 checkout（無 `merchant_trade_no`）→ 400 `NOT_INITIATED`
+- 回傳查詢結果：`{ order, ecpay: { tradeStatus, paymentType, tradeAmt, tradeDate } }`
+
+**POST /ecpay/return**（ReturnURL — Server-to-Server）
+
+綠界伺服器主動呼叫的付款通知端點，本地環境無法接收，正式部署後生效：
+- 驗證 CheckMacValue（失敗時仍回傳 `1|OK` 避免綠界重試）
+- `RtnCode === '1'` 時更新訂單 status 為 `'paid'`
+- 必須以純文字 `1|OK` 回應（HTTP 200），不可回傳 JSON 或帶引號
+
+**POST /ecpay/order-result**（OrderResultURL — 瀏覽器跳轉）
+
+付款後由用戶瀏覽器 POST 結果，本地環境可正常接收：
+- 驗證 CheckMacValue
+- 透過 `CustomField1`（儲存 `order.id`）找回對應訂單
+- `RtnCode === '1'` → status 更新為 `'paid'`；否則更新為 `'failed'`
+- 完成後 redirect 至 `/orders/:id?payment=success` 或 `?payment=failed`
+
+### CheckMacValue 計算規則
+
+AIO 使用 **CMV-SHA256** 協議，實作於 `src/utils/ecpay.js`：
+
+1. 移除 `CheckMacValue` 自身
+2. 所有 key 按不分大小寫排序
+3. 拼接字串：`HashKey=xxx&k1=v1&...&HashIV=xxx`
+4. 套用 `ecpayUrlEncode()`（encodeURIComponent → 替換 → toLowerCase → .NET 字元還原）
+5. SHA256 雜湊後轉大寫
+6. 驗證時使用 `crypto.timingSafeEqual()` 防時序攻擊
+
+> **重要：** `ecpayUrlEncode` 與站內付 2.0 的 `aesUrlEncode` 邏輯不同，不可混用。
+
+### 環境變數
+
+| 變數 | 說明 | 測試值 |
+|------|------|--------|
+| `ECPAY_MERCHANT_ID` | 綠界特店編號 | `3002607` |
+| `ECPAY_HASH_KEY` | 簽章金鑰 | `pwFHCqoQZGmho4w6` |
+| `ECPAY_HASH_IV` | 簽章 IV | `EkRm7iFT261dpevs` |
+| `ECPAY_ENV` | `staging`（測試）或 `production`（正式）| `staging` |
+| `BASE_URL` | ReturnURL / OrderResultURL 前綴 | `http://localhost:3001` |
 
 ---
 

@@ -4,6 +4,31 @@
 
 ---
 
+## [1.1.0] — 2026-04-17
+
+### 新增
+
+- **ECPay AIO 金流整合**
+  - `src/utils/ecpay.js`：CheckMacValue（CMV-SHA256）計算與驗證、`QueryTradeInfo` 主動查詢、AIO 表單參數建構
+  - `POST /api/ecpay/checkout/:orderId`：產生 AIO 付款表單參數（含 CheckMacValue），回傳給前端動態提交
+  - `POST /api/ecpay/query/:orderId`：主動呼叫綠界 QueryTradeInfo API 查詢付款結果，自動更新訂單狀態
+  - `POST /ecpay/order-result`（OrderResultURL）：接收用戶瀏覽器 POST 的付款結果，驗證後更新訂單狀態並 redirect
+  - `POST /ecpay/return`（ReturnURL）：Server-to-Server 付款通知，本地環境不可達，正式部署後生效
+
+### 變更
+
+- **訂單付款 UI 重構**（`order-detail.ejs` / `order-detail.js`）
+  - 移除「付款成功」/「付款失敗」模擬按鈕
+  - 新增「前往綠界付款」按鈕（跳轉至 ECPay 付款頁）
+  - 新增「查詢付款狀態」按鈕（呼叫 QueryTradeInfo 確認結果）
+  - `pending` 訂單兩個按鈕均可用；非 pending 訂單只顯示「再次確認付款狀態」
+
+### 資料庫
+
+- `orders` 表新增 `merchant_trade_no TEXT` 欄位（儲存綠界交易編號），以 `ALTER TABLE` migration 方式加入，向下相容
+
+---
+
 ## [1.0.0] — 2026-04-17
 
 ### 新增
@@ -60,7 +85,6 @@
 
 ## 未來版本規劃
 
-- ECPay 綠界金流真實整合
 - 商品搜尋與分類篩選
 - 訂單 Email 通知
 - 用戶訂單取消（pending 狀態）

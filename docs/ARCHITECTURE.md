@@ -15,20 +15,23 @@ project-root/
 ├── database.sqlite             # SQLite 資料庫檔案（啟動時自動建立）
 │
 ├── src/
-│   ├── database.js             # DB 初始化：建表、啟用外鍵約束、WAL 模式、植入種子資料
+│   ├── database.js             # DB 初始化：建表、migration、WAL 模式、植入種子資料
 │   ├── middleware/
 │   │   ├── authMiddleware.js   # 解析 Authorization Bearer JWT，注入 req.user
 │   │   ├── adminMiddleware.js  # 檢查 req.user.role === 'admin'
 │   │   ├── sessionMiddleware.js# 提取 X-Session-Id header，注入 req.sessionId
 │   │   └── errorHandler.js     # 全域錯誤捕捉，回傳標準 JSON 錯誤格式
-│   └── routes/
-│       ├── authRoutes.js       # POST /register /login；GET /profile
-│       ├── pageRoutes.js       # EJS 頁面路由（SSR）
-│       ├── productRoutes.js    # GET /api/products、/api/products/:id
-│       ├── cartRoutes.js       # 購物車 CRUD（雙模式：JWT 或 Session）
-│       ├── orderRoutes.js      # 訂單建立、查詢、模擬付款
-│       ├── adminProductRoutes.js # 管理員商品 CRUD
-│       └── adminOrderRoutes.js # 管理員訂單查詢
+│   ├── routes/
+│   │   ├── authRoutes.js       # POST /register /login；GET /profile
+│   │   ├── pageRoutes.js       # EJS 頁面路由（SSR）
+│   │   ├── productRoutes.js    # GET /api/products、/api/products/:id
+│   │   ├── cartRoutes.js       # 購物車 CRUD（雙模式：JWT 或 Session）
+│   │   ├── orderRoutes.js      # 訂單建立、查詢、模擬付款
+│   │   ├── ecpayRoutes.js      # ECPay AIO 付款啟動、OrderResultURL、ReturnURL、QueryTradeInfo
+│   │   ├── adminProductRoutes.js # 管理員商品 CRUD
+│   │   └── adminOrderRoutes.js # 管理員訂單查詢
+│   └── utils/
+│       └── ecpay.js            # CheckMacValue（CMV-SHA256）、表單參數建構、QueryTradeInfo 呼叫
 │
 ├── public/
 │   ├── css/
@@ -48,7 +51,7 @@ project-root/
 │           ├── cart.js         # 購物車
 │           ├── checkout.js     # 結帳表單
 │           ├── orders.js       # 訂單歷史列表
-│           ├── order-detail.js # 訂單詳情 + 付款模擬
+│           ├── order-detail.js # 訂單詳情 + ECPay 付款啟動 + 狀態查詢
 │           ├── admin-products.js # 管理員商品管理
 │           └── admin-orders.js # 管理員訂單查詢
 │
@@ -103,6 +106,7 @@ npm start
             ├─ 啟用 PRAGMA foreign_keys = ON
             ├─ 啟用 PRAGMA journal_mode = WAL
             ├─ CREATE TABLE IF NOT EXISTS（users, products, cart_items, orders, order_items）
+            ├─ ALTER TABLE orders ADD COLUMN merchant_trade_no（migration，已存在則跳過）
             └─ 植入種子資料（1 位管理員 + 8 種花卉商品，若已存在則跳過）
 ```
 
@@ -117,6 +121,8 @@ npm start
 | `/api/products` | productRoutes.js | 否 | 商品列表與詳情 |
 | `/api/cart` | cartRoutes.js | 需 JWT 或 X-Session-Id | 購物車 CRUD |
 | `/api/orders` | orderRoutes.js | 需 JWT | 訂單管理 |
+| `/api/ecpay` | ecpayRoutes.js | 部分（checkout/query 需 JWT）| ECPay 金流整合 |
+| `/ecpay` | ecpayRoutes.js | 否（綠界 callback / 瀏覽器跳轉）| ECPay OrderResultURL / ReturnURL |
 | `/api/admin/products` | adminProductRoutes.js | 需 JWT + admin 角色 | 管理員商品 CRUD |
 | `/api/admin/orders` | adminOrderRoutes.js | 需 JWT + admin 角色 | 管理員訂單查詢 |
 
@@ -149,7 +155,15 @@ npm start
 | POST | `/` | JWT | 從購物車建立訂單（含庫存扣除、交易）|
 | GET | `/` | JWT | 取得目前用戶訂單列表 |
 | GET | `/:id` | JWT | 取得訂單詳情（含商品明細）|
-| PATCH | `/:id/pay` | JWT | 模擬付款（action: "success" 或 "fail"）|
+| PATCH | `/:id/pay` | JWT | 模擬付款（action: "success" 或 "fail"，測試用）|
+
+#### ECPay 金流 `/api/ecpay` 與 `/ecpay`
+| 方法 | 路徑 | 認證 | 說明 |
+|------|------|------|------|
+| POST | `/api/ecpay/checkout/:orderId` | JWT | 產生 AIO 付款表單參數（含 CheckMacValue）|
+| POST | `/api/ecpay/query/:orderId` | JWT | 主動查詢綠界付款狀態並更新訂單 |
+| POST | `/ecpay/return` | 否（CheckMacValue 驗證）| ReturnURL — 綠界 S2S 通知（正式環境）|
+| POST | `/ecpay/order-result` | 否（CheckMacValue 驗證）| OrderResultURL — 瀏覽器跳轉，更新狀態後 redirect |
 
 #### 管理員商品 `/api/admin/products`
 | 方法 | 路徑 | 認證 | 說明 |
@@ -282,7 +296,10 @@ npm start
 | recipient_address | TEXT | NOT NULL | 收件地址 |
 | total_amount | INTEGER | NOT NULL | 訂單總金額（新台幣）|
 | status | TEXT | NOT NULL DEFAULT 'pending' | 'pending' / 'paid' / 'failed' |
+| merchant_trade_no | TEXT | — | 綠界交易編號（英數字 20 碼，每次發起付款更新）|
 | created_at | TEXT | NOT NULL DEFAULT datetime('now') | 訂單建立時間 |
+
+> **注意：** `merchant_trade_no` 透過 `ALTER TABLE` migration 加入，每次呼叫 `/api/ecpay/checkout/:orderId` 時更新，用於 `QueryTradeInfo` 查詢與 `OrderResultURL` 回查訂單。
 
 ### order_items 表
 | 欄位 | 型別 | 約束 | 說明 |

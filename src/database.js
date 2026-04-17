@@ -68,6 +68,13 @@ function initializeDatabase() {
     );
   `);
 
+  // Migration: add merchant_trade_no column (idempotent)
+  try {
+    db.exec('ALTER TABLE orders ADD COLUMN merchant_trade_no TEXT');
+  } catch (e) {
+    // 欄位已存在，忽略
+  }
+
   // Seed data
   seedAdminUser();
   seedProducts();
