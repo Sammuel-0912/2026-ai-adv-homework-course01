@@ -14,15 +14,15 @@ createApp({
     const querying = ref(false);
 
     const statusMap = {
-      pending: { label: '待付款', cls: 'bg-apricot/20 text-apricot' },
-      paid: { label: '已付款', cls: 'bg-sage/20 text-sage' },
-      failed: { label: '付款失敗', cls: 'bg-red-100 text-red-600' },
+      pending: { label: '待付款', style: 'background:rgba(207,138,82,.15);color:#B8651A;' },
+      paid:    { label: '已付款', style: 'background:rgba(61,122,92,.15);color:#3D7A5C;' },
+      failed:  { label: '付款失敗', style: 'background:#fee2e2;color:#dc2626;' },
     };
 
     const paymentMessages = {
-      success: { text: '付款成功！感謝您的購買。', cls: 'bg-sage/10 text-sage border border-sage/20' },
-      failed: { text: '付款失敗，請重試或聯絡客服。', cls: 'bg-red-50 text-red-600 border border-red-100' },
-      cancel: { text: '付款已取消。', cls: 'bg-apricot/10 text-apricot border border-apricot/20' },
+      success: { text: '付款成功！感謝您的購買。', style: 'background:rgba(61,122,92,.08);color:#3D7A5C;border:1px solid rgba(61,122,92,.2);' },
+      failed:  { text: '付款失敗，請重試或聯絡客服。', style: 'background:#fef2f2;color:#dc2626;border:1px solid #fee2e2;' },
+      cancel:  { text: '付款已取消。', style: 'background:rgba(207,138,82,.08);color:#B8651A;border:1px solid rgba(207,138,82,.2);' },
     };
 
     // 前往綠界付款：取得表單參數後動態 submit

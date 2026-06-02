@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>建立帳號 — Flower Life</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    :root {
+      --cream:        #F7F0E6;
+      --cream-light:  #FDF9F4;
+      --cream-mid:    #EDE3D5;
+      --maroon:       #6B1E2A;
+      --maroon-dark:  #4A1219;
+      --maroon-light: #9B3A4A;
+      --maroon-mist:  #F9F0F1;
+      --gold:         #B8965A;
+      --gold-light:   #D4B07A;
+      --charcoal:     #2A1A1F;
+      --text-muted:   #7A6068;
+      --success:      #3D7A5C;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background: var(--cream-light);
+      color: var(--charcoal);
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .auth-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      min-height: 100vh;
+      width: 100%;
+    }
+    @media (max-width: 767.98px) {
+      .auth-wrapper { grid-template-columns: 1fr; }
+    }
+
+    .auth-visual {
+      position: relative;
+      overflow: hidden;
+    }
+    @media (max-width: 767.98px) {
+      .auth-visual { min-height: 260px; order: 0; }
+    }
+    .auth-visual img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+    }
+    .auth-visual-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(160deg, rgba(74,18,25,.7) 0%, rgba(107,30,42,.5) 100%);
+    }
+    .auth-visual-content {
+      position: absolute; inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 2.5rem;
+      color: #fff;
+    }
+    .auth-logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 500;
+      letter-spacing: .1em;
+      text-decoration: none;
+      color: #fff;
+    }
+    .auth-logo span { color: var(--gold-light); font-weight: 300; }
+
+    .visual-perks { display: flex; flex-direction: column; gap: 1.2rem; }
+    .perk-item {
+      display: flex;
+      align-items: flex-start;
+      gap: .85rem;
+    }
+    .perk-icon {
+      width: 36px; height: 36px;
+      flex-shrink: 0;
+      background: rgba(184,150,90,.2);
+      border: 1px solid rgba(184,150,90,.3);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .9rem;
+      color: var(--gold-light);
+    }
+    .perk-title {
+      font-size: .82rem;
+      font-weight: 600;
+      color: rgba(255,255,255,.92);
+      margin-bottom: .15rem;
+      letter-spacing: .04em;
+    }
+    .perk-desc {
+      font-size: .72rem;
+      color: rgba(255,255,255,.5);
+      line-height: 1.4;
+    }
+
+    /* ── Form Panel ── */
+    .auth-form-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 2.5rem 2rem;
+      background: var(--cream-light);
+      overflow-y: auto;
+    }
+    @media (min-width: 768px) {
+      .auth-form-panel { padding: 2.5rem 4rem; }
+    }
+    .form-inner { max-width: 420px; margin: 0 auto; width: 100%; }
+
+    /* ── Tabs ── */
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1.5px solid var(--cream-mid);
+      margin-bottom: 1.8rem;
+    }
+    .auth-tab {
+      background: none; border: none;
+      font-family: 'Jost', sans-serif;
+      font-size: .78rem; font-weight: 600;
+      letter-spacing: .15em; text-transform: uppercase;
+      color: var(--text-muted);
+      padding: .9rem 1.6rem .75rem;
+      cursor: pointer;
+      position: relative;
+      transition: color .2s;
+    }
+    .auth-tab::after {
+      content: '';
+      position: absolute;
+      bottom: -1.5px; left: 0; right: 0;
+      height: 2.5px;
+      background: var(--maroon);
+      transform: scaleX(0);
+      transition: transform .25s ease;
+    }
+    .auth-tab.active { color: var(--maroon); }
+    .auth-tab.active::after { transform: scaleX(1); }
+
+    /* ── Welcome ── */
+    .auth-welcome { margin-bottom: 1.5rem; }
+    .auth-welcome h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.2rem; font-weight: 500;
+      color: var(--charcoal); margin-bottom: .35rem;
+    }
+    .auth-welcome p { font-size: .88rem; color: var(--text-muted); }
+
+    /* ── Social ── */
+    .btn-social {
+      display: flex; align-items: center; justify-content: center;
+      gap: .65rem;
+      background: #fff;
+      border: 1.5px solid var(--cream-mid);
+      border-radius: 3px;
+      font-family: 'Jost', sans-serif;
+      font-size: .82rem; font-weight: 500;
+      color: var(--charcoal);
+      padding: .7rem 1rem;
+      width: 100%;
+      cursor: pointer;
+      transition: border-color .2s, box-shadow .2s, background .2s;
+      text-decoration: none;
+    }
+    .btn-social:hover {
+      border-color: var(--maroon-light);
+      box-shadow: 0 2px 12px rgba(107,30,42,.08);
+      background: var(--maroon-mist);
+      color: var(--charcoal);
+    }
+
+    /* ── Divider ── */
+    .auth-divider {
+      display: flex; align-items: center; gap: 1rem;
+      margin: 1.2rem 0;
+      color: var(--text-muted); font-size: .78rem; letter-spacing: .06em;
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: ''; flex: 1; height: 1px; background: var(--cream-mid);
+    }
+
+    /* ── Form Controls ── */
+    .form-label {
+      font-size: .75rem; font-weight: 600;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--charcoal); margin-bottom: .4rem;
+    }
+    .form-control {
+      background: #fff;
+      border: 1.5px solid var(--cream-mid);
+      border-radius: 3px;
+      color: var(--charcoal);
+      font-family: 'Jost', sans-serif;
+      font-size: .9rem;
+      padding: .7rem 1rem;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .form-control:focus {
+      border-color: var(--maroon);
+      box-shadow: 0 0 0 3px rgba(107,30,42,.08);
+      background: #fff;
+      color: var(--charcoal);
+    }
+    .form-control::placeholder { color: var(--text-muted); font-weight: 300; }
+    .form-control.is-valid {
+      border-color: var(--success);
+      background-image: none;
+    }
+    .form-control.is-invalid {
+      border-color: var(--maroon);
+      background-image: none;
+    }
+
+    .input-group-text {
+      background: #fff;
+      border: 1.5px solid var(--cream-mid);
+      border-left: none;
+      border-radius: 0 3px 3px 0;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: color .2s;
+      padding: .7rem .9rem;
+    }
+    .input-group-text:hover { color: var(--maroon); }
+    .input-group .form-control {
+      border-right: none;
+      border-radius: 3px 0 0 3px;
+    }
+
+    /* ── Password strength ── */
+    .strength-bar {
+      display: flex; gap: 4px; margin-top: .5rem;
+    }
+    .strength-segment {
+      height: 3px; flex: 1; border-radius: 2px;
+      background: var(--cream-mid);
+      transition: background .3s;
+    }
+    .strength-segment.active-weak { background: #D64747; }
+    .strength-segment.active-fair { background: var(--gold); }
+    .strength-segment.active-good { background: #7CB67C; }
+    .strength-segment.active-strong { background: var(--success); }
+    .strength-label {
+      font-size: .7rem; color: var(--text-muted); margin-top: .3rem;
+    }
+
+    /* ── Checkbox ── */
+    .form-check-input:checked {
+      background-color: var(--maroon); border-color: var(--maroon);
+    }
+    .form-check-input:focus { box-shadow: 0 0 0 3px rgba(107,30,42,.1); }
+    .form-check-label { font-size: .8rem; color: var(--text-muted); }
+    .form-check-label a { color: var(--maroon); text-decoration: none; }
+    .form-check-label a:hover { text-decoration: underline; }
+
+    /* ── Submit ── */
+    .btn-auth {
+      background: var(--maroon); color: #fff;
+      border: none; border-radius: 3px;
+      font-family: 'Jost', sans-serif;
+      font-size: .82rem; font-weight: 600;
+      letter-spacing: .14em; text-transform: uppercase;
+      padding: 1rem; width: 100%;
+      transition: background .2s, transform .15s;
+    }
+    .btn-auth:hover {
+      background: var(--maroon-dark); color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .auth-switch {
+      text-align: center;
+      font-size: .82rem;
+      color: var(--text-muted);
+      margin-top: 1.2rem;
+    }
+    .auth-switch a { color: var(--maroon); font-weight: 600; text-decoration: none; }
+    .auth-switch a:hover { text-decoration: underline; }
+
+    /* ── Animation ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp .6s ease both; }
+    .delay-1 { animation-delay: .1s; }
+    .delay-2 { animation-delay: .2s; }
+    .delay-3 { animation-delay: .3s; }
+  </style>
+</head>
+<body>
+
+  <div class="auth-wrapper">
+
+    <!-- Left: Visual -->
+    <div class="auth-visual">
+      <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=800&q=80"
+        alt="花藝背景" />
+      <div class="auth-visual-overlay"></div>
+      <div class="auth-visual-content">
+        <a class="auth-logo" href="index.html">Flower <span>Life</span></a>
+
+        <div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:300;color:rgba(255,255,255,.7);letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.2rem;">
+            會員專屬好處
+          </div>
+          <div class="visual-perks">
+            <div class="perk-item">
+              <div class="perk-icon"><i class="bi bi-percent"></i></div>
+              <div>
+                <div class="perk-title">首購 9 折優惠碼</div>
+                <div class="perk-desc">立即加入即享首次購物 9 折折扣</div>
+              </div>
+            </div>
+            <div class="perk-item">
+              <div class="perk-icon"><i class="bi bi-award"></i></div>
+              <div>
+                <div class="perk-title">積點兌換好禮</div>
+                <div class="perk-desc">每次消費累積花朵積點，可兌換精美禮品</div>
+              </div>
+            </div>
+            <div class="perk-item">
+              <div class="perk-icon"><i class="bi bi-bell"></i></div>
+              <div>
+                <div class="perk-title">新品搶先知</div>
+                <div class="perk-desc">限定商品與季節花訊第一手通知</div>
+              </div>
+            </div>
+            <div class="perk-item">
+              <div class="perk-icon"><i class="bi bi-clock-history"></i></div>
+              <div>
+                <div class="perk-title">訂單歷史追蹤</div>
+                <div class="perk-desc">輕鬆管理所有訂單與配送狀態</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="auth-form-panel">
+      <div class="form-inner">
+
+        <!-- Tabs -->
+        <div class="auth-tabs fade-up">
+          <button class="auth-tab" onclick="window.location='login.html'">登入</button>
+          <button class="auth-tab active" onclick="window.location='register.html'">建立帳號</button>
+        </div>
+
+        <!-- Welcome -->
+        <div class="auth-welcome fade-up delay-1">
+          <h1>加入我們</h1>
+          <p>免費建立帳號，探索花卉世界的美好。</p>
+        </div>
+
+        <!-- Social Register -->
+        <div class="d-flex flex-column gap-2 mb-2 fade-up delay-2">
+          <a href="#" class="btn-social">
+            <svg width="18" height="18" viewBox="0 0 48 48">
+              <path fill="#EA4335" d="M24 9.5c3.5 0 6.3 1.2 8.5 3.2l6.4-6.4C34.8 2.7 29.8.5 24 .5 14.9.5 7.1 5.8 3.4 13.4l7.5 5.8C12.7 13.3 17.9 9.5 24 9.5z"/>
+              <path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v8.5h12.7c-.6 3-2.3 5.5-4.8 7.2l7.4 5.7c4.3-4 6.8-9.8 6.8-16.9z"/>
+              <path fill="#FBBC05" d="M10.9 28.8A14.8 14.8 0 0 1 9.5 24c0-1.7.3-3.3.8-4.8l-7.5-5.8A23.5 23.5 0 0 0 .5 24c0 3.8.9 7.4 2.5 10.6l7.9-5.8z"/>
+              <path fill="#34A853" d="M24 47.5c5.8 0 10.7-1.9 14.3-5.2l-7.4-5.7c-2 1.3-4.5 2.1-6.9 2.1-6.1 0-11.3-3.8-13.2-9.1l-7.9 5.8C7.1 42.2 14.9 47.5 24 47.5z"/>
+            </svg>
+            以 Google 帳號快速加入
+          </a>
+          <div class="d-flex gap-2">
+            <a href="#" class="btn-social flex-fill">
+              <i class="bi bi-facebook" style="font-size:1.1rem;color:#1877F2;"></i>
+              Facebook
+            </a>
+            <a href="#" class="btn-social flex-fill">
+              <i class="bi bi-line" style="font-size:1.1rem;color:#06C755;"></i>
+              LINE
+            </a>
+          </div>
+        </div>
+
+        <div class="auth-divider fade-up delay-2">或填寫基本資料</div>
+
+        <!-- Register Form -->
+        <form id="registerForm" novalidate class="fade-up delay-3">
+          <!-- Name -->
+          <div class="mb-3">
+            <label class="form-label" for="name">姓名 / 暱稱</label>
+            <input type="text" class="form-control" id="name"
+              placeholder="請輸入您的姓名" required />
+          </div>
+
+          <!-- Email -->
+          <div class="mb-3">
+            <label class="form-label" for="email">電子郵件</label>
+            <input type="email" class="form-control" id="email"
+              placeholder="your@email.com" required />
+          </div>
+
+          <!-- Password -->
+          <div class="mb-1">
+            <label class="form-label" for="password">密碼</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="password"
+                placeholder="至少 6 碼" required minlength="6"
+                oninput="updateStrength(this.value)" />
+              <button class="input-group-text" type="button" id="togglePwd"
+                aria-label="顯示/隱藏密碼">
+                <i class="bi bi-eye" id="eyeIcon1"></i>
+              </button>
+            </div>
+            <!-- Strength bar -->
+            <div class="strength-bar" id="strengthBar">
+              <div class="strength-segment" id="seg1"></div>
+              <div class="strength-segment" id="seg2"></div>
+              <div class="strength-segment" id="seg3"></div>
+              <div class="strength-segment" id="seg4"></div>
+            </div>
+            <div class="strength-label" id="strengthLabel">請輸入密碼</div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="mb-3 mt-3">
+            <label class="form-label" for="confirmPassword">確認密碼</label>
+            <div class="input-group">
+              <input type="password" class="form-control" id="confirmPassword"
+                placeholder="再次輸入密碼" required />
+              <button class="input-group-text" type="button" id="togglePwd2"
+                aria-label="顯示/隱藏確認密碼">
+                <i class="bi bi-eye" id="eyeIcon2"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Terms -->
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="terms" required />
+            <label class="form-check-label" for="terms">
+              我同意 <a href="#">服務條款</a> 及 <a href="#">隱私政策</a>
+            </label>
+          </div>
+
+          <!-- Subscribe optional -->
+          <div class="form-check mb-4">
+            <input class="form-check-input" type="checkbox" id="newsletter" checked />
+            <label class="form-check-label" for="newsletter">
+              訂閱電子報，獲取花卉新品與優惠資訊
+            </label>
+          </div>
+
+          <!-- Submit -->
+          <button type="submit" class="btn btn-auth">
+            <span id="regText">建立帳號</span>
+            <span id="regSpinner" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+          </button>
+
+          <!-- Error / Success message -->
+          <div id="formMsg" class="d-none mt-3" style="border-radius:3px;font-size:.82rem;padding:.7rem 1rem;"></div>
+        </form>
+
+        <!-- Switch to login -->
+        <div class="auth-switch fade-up delay-3">
+          已有帳號？ <a href="login.html">立即登入</a>
+        </div>
+        <div class="text-center mt-2 fade-up delay-3">
+          <a href="index.html" style="font-size:.78rem;color:var(--text-muted);text-decoration:none;">
+            <i class="bi bi-arrow-left me-1"></i> 返回首頁
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Toggle password visibility - password field
+    function setupToggle(btnId, inputId, iconId) {
+      document.getElementById(btnId).addEventListener('click', () => {
+        const input = document.getElementById(inputId);
+        const icon = document.getElementById(iconId);
+        const isHidden = input.type === 'password';
+        input.type = isHidden ? 'text' : 'password';
+        icon.className = isHidden ? 'bi bi-eye-slash' : 'bi bi-eye';
+      });
+    }
+    setupToggle('togglePwd', 'password', 'eyeIcon1');
+    setupToggle('togglePwd2', 'confirmPassword', 'eyeIcon2');
+
+    // Password strength indicator
+    function updateStrength(val) {
+      const segs = [1,2,3,4].map(i => document.getElementById('seg' + i));
+      const label = document.getElementById('strengthLabel');
+      const len = val.length;
+      let score = 0;
+      if (len >= 6) score++;
+      if (len >= 10) score++;
+      if (/[A-Z]/.test(val) && /[a-z]/.test(val)) score++;
+      if (/[0-9]/.test(val) && /[^a-zA-Z0-9]/.test(val)) score++;
+
+      const classes = ['', 'active-weak', 'active-fair', 'active-good', 'active-strong'];
+      const labels = ['請輸入密碼', '密碼太弱', '尚可', '不錯', '非常強'];
+      segs.forEach((s, i) => {
+        s.className = 'strength-segment ' + (i < score ? classes[score] : '');
+      });
+      label.textContent = val.length === 0 ? '請輸入密碼' : labels[score];
+      label.style.color = score <= 1 ? 'var(--maroon)' : score === 2 ? 'var(--gold)' : 'var(--success)';
+    }
+
+    // Form submission
+    const form = document.getElementById('registerForm');
+    const regText = document.getElementById('regText');
+    const regSpinner = document.getElementById('regSpinner');
+    const formMsg = document.getElementById('formMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirmPassword').value;
+      const terms = document.getElementById('terms').checked;
+
+      if (!name || !email || !password) {
+        showMsg('請填寫所有必填欄位。', 'error'); return;
+      }
+      if (password.length < 6) {
+        showMsg('密碼至少需要 6 個字元。', 'error'); return;
+      }
+      if (password !== confirm) {
+        showMsg('兩次輸入的密碼不一致，請重新確認。', 'error'); return;
+      }
+      if (!terms) {
+        showMsg('請閱讀並同意服務條款及隱私政策。', 'error'); return;
+      }
+
+      regText.textContent = '建立帳號中…';
+      regSpinner.classList.remove('d-none');
+      formMsg.classList.add('d-none');
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.data?.token) {
+          localStorage.setItem('flower_token', data.data.token);
+          localStorage.setItem('flower_user', JSON.stringify(data.data.user));
+          showMsg('帳號建立成功！歡迎加入 Flower Life 🌸', 'success');
+          setTimeout(() => { window.location.href = '/'; }, 1500);
+        } else if (res.status === 409) {
+          showMsg('此電子郵件已被使用，請使用其他帳號或直接登入。', 'error');
+        } else {
+          showMsg(data.message || '建立帳號失敗，請稍後再試。', 'error');
+        }
+      } catch (err) {
+        showMsg('網路錯誤，請稍後再試。', 'error');
+      } finally {
+        regText.textContent = '建立帳號';
+        regSpinner.classList.add('d-none');
+      }
+    });
+
+    function showMsg(msg, type) {
+      formMsg.textContent = msg;
+      formMsg.className = type === 'success'
+        ? 'mt-3' : 'mt-3';
+      formMsg.style.cssText = type === 'success'
+        ? 'background:#EBF7F1;border:1px solid rgba(61,122,92,.25);color:var(--success);border-radius:3px;font-size:.82rem;padding:.7rem 1rem;'
+        : 'background:var(--maroon-mist);border:1px solid rgba(107,30,42,.2);color:var(--maroon);border-radius:3px;font-size:.82rem;padding:.7rem 1rem;';
+      formMsg.classList.remove('d-none');
+    }
+  </script>
+</body>
+</html>

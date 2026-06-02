@@ -1,87 +1,106 @@
-<div id="app">
-  <h1 class="text-2xl font-bold text-text-primary mb-6" style="font-family: 'Noto Serif TC', serif;">結帳</h1>
+<div id="app" class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
 
-  <div v-if="loading" class="flex justify-center py-12">
-    <div class="w-8 h-8 border-4 border-rose-primary border-t-transparent rounded-full animate-spin"></div>
-  </div>
+      <h1 class="mb-4" style="font-size:clamp(1.8rem,3.5vw,2.4rem);font-weight:500;">
+        <i class="bi bi-credit-card me-2" style="color:var(--maroon);"></i>結帳
+      </h1>
 
-  <div v-else class="flex flex-col lg:flex-row gap-8">
-    <!-- Left: Form -->
-    <div class="lg:w-3/5">
-      <div class="bg-white rounded-2xl shadow-sm p-6">
-        <h2 class="font-medium text-text-primary mb-4">收件資訊</h2>
-        <div class="space-y-4">
-          <div>
-            <label class="block text-sm text-text-secondary mb-1">收件人姓名</label>
-            <input
-              v-model="form.recipientName"
-              type="text"
-              placeholder="請輸入收件人姓名"
-              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-primary transition-colors"
-              :class="{ 'border-red-400': errors.recipientName }"
-            />
-            <p v-if="errors.recipientName" class="text-red-500 text-xs mt-1">{{ errors.recipientName }}</p>
+      <div v-if="loading" class="d-flex justify-content-center py-5">
+        <div class="fl-spinner"></div>
+      </div>
+
+      <div v-else class="row g-4">
+        <!-- Left: Form -->
+        <div class="col-lg-7">
+          <div class="fl-card p-4">
+            <h5 style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin-bottom:1.2rem;">收件資訊</h5>
+            <div class="mb-3">
+              <label class="form-label" style="font-size:.82rem;color:var(--text-muted-c);">收件人姓名</label>
+              <input
+                v-model="form.recipientName"
+                type="text"
+                placeholder="請輸入收件人姓名"
+                class="form-control"
+                :class="{ 'is-invalid': errors.recipientName }"
+                style="font-size:.88rem;border-color:var(--cream-mid);border-radius:2px;"
+              />
+              <div v-if="errors.recipientName" class="invalid-feedback" style="font-size:.78rem;">{{ errors.recipientName }}</div>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" style="font-size:.82rem;color:var(--text-muted-c);">Email</label>
+              <input
+                v-model="form.recipientEmail"
+                type="email"
+                placeholder="請輸入 Email"
+                class="form-control"
+                :class="{ 'is-invalid': errors.recipientEmail }"
+                style="font-size:.88rem;border-color:var(--cream-mid);border-radius:2px;"
+              />
+              <div v-if="errors.recipientEmail" class="invalid-feedback" style="font-size:.78rem;">{{ errors.recipientEmail }}</div>
+            </div>
+            <div class="mb-2">
+              <label class="form-label" style="font-size:.82rem;color:var(--text-muted-c);">收件地址</label>
+              <input
+                v-model="form.recipientAddress"
+                type="text"
+                placeholder="請輸入收件地址"
+                class="form-control"
+                :class="{ 'is-invalid': errors.recipientAddress }"
+                style="font-size:.88rem;border-color:var(--cream-mid);border-radius:2px;"
+              />
+              <div v-if="errors.recipientAddress" class="invalid-feedback" style="font-size:.78rem;">{{ errors.recipientAddress }}</div>
+            </div>
           </div>
-          <div>
-            <label class="block text-sm text-text-secondary mb-1">Email</label>
-            <input
-              v-model="form.recipientEmail"
-              type="email"
-              placeholder="請輸入 Email"
-              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-primary transition-colors"
-              :class="{ 'border-red-400': errors.recipientEmail }"
-            />
-            <p v-if="errors.recipientEmail" class="text-red-500 text-xs mt-1">{{ errors.recipientEmail }}</p>
-          </div>
-          <div>
-            <label class="block text-sm text-text-secondary mb-1">收件地址</label>
-            <input
-              v-model="form.recipientAddress"
-              type="text"
-              placeholder="請輸入收件地址"
-              class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-rose-primary transition-colors"
-              :class="{ 'border-red-400': errors.recipientAddress }"
-            />
-            <p v-if="errors.recipientAddress" class="text-red-500 text-xs mt-1">{{ errors.recipientAddress }}</p>
+        </div>
+
+        <!-- Right: Summary -->
+        <div class="col-lg-5">
+          <div class="fl-card p-4" style="position:sticky;top:6rem;">
+            <h5 style="font-family:'Cormorant Garamond',serif;font-size:1.2rem;margin-bottom:1.2rem;">訂單摘要</h5>
+
+            <div v-for="item in cartItems" :key="item.id"
+              class="d-flex justify-content-between mb-2"
+              style="font-size:.85rem;"
+            >
+              <span style="color:var(--text-muted-c);">{{ item.product.name }} x {{ item.quantity }}</span>
+              <span style="color:var(--charcoal);">NT$ {{ (item.product.price * item.quantity).toLocaleString() }}</span>
+            </div>
+
+            <hr style="border-color:var(--cream-mid);margin:1rem 0;">
+
+            <div class="d-flex justify-content-between mb-2" style="font-size:.88rem;">
+              <span style="color:var(--text-muted-c);">商品小計</span>
+              <span style="color:var(--charcoal);">NT$ {{ cartTotal.toLocaleString() }}</span>
+            </div>
+            <div class="d-flex justify-content-between mb-3" style="font-size:.88rem;">
+              <span style="color:var(--text-muted-c);">運費</span>
+              <span style="color:var(--charcoal);">{{ cartTotal >= 800 ? '免運' : 'NT$ 150' }}</span>
+            </div>
+
+            <hr style="border-color:var(--cream-mid);">
+            <div class="d-flex justify-content-between mb-4">
+              <span style="font-weight:700;color:var(--charcoal);">總計</span>
+              <span style="font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:500;color:var(--maroon);">
+                NT$ {{ (cartTotal + (cartTotal >= 800 ? 0 : 150)).toLocaleString() }}
+              </span>
+            </div>
+
+            <button
+              @click="submitOrder"
+              :disabled="submitting"
+              class="btn-maroon w-100"
+              style="padding:1rem;font-size:.82rem;"
+            >
+              {{ submitting ? '處理中...' : '確認送出訂單' }}
+            </button>
+            <a href="/cart" class="d-block text-center mt-3" style="font-size:.78rem;color:var(--text-muted-c);text-decoration:none;">
+              ← 返回購物車
+            </a>
           </div>
         </div>
       </div>
-    </div>
 
-    <!-- Right: Summary -->
-    <div class="lg:w-2/5">
-      <div class="bg-white rounded-2xl shadow-sm p-6 sticky top-24">
-        <h2 class="font-medium text-text-primary mb-4">訂單摘要</h2>
-        <div class="space-y-3 mb-4">
-          <div v-for="item in cartItems" :key="item.id" class="flex justify-between text-sm">
-            <span class="text-text-secondary">{{ item.product.name }} x {{ item.quantity }}</span>
-            <span class="text-text-primary">NT$ {{ (item.product.price * item.quantity).toLocaleString() }}</span>
-          </div>
-        </div>
-        <div class="border-t border-gray-100 pt-3 space-y-2 text-sm">
-          <div class="flex justify-between">
-            <span class="text-text-secondary">商品小計</span>
-            <span>NT$ {{ cartTotal.toLocaleString() }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-text-secondary">運費</span>
-            <span>{{ cartTotal >= 500 ? '免運' : 'NT$ 150' }}</span>
-          </div>
-        </div>
-        <div class="border-t border-gray-100 pt-3 mt-3 flex justify-between items-center">
-          <span class="font-bold text-text-primary">總計</span>
-          <span class="font-bold text-xl text-rose-primary">
-            NT$ {{ (cartTotal + (cartTotal >= 500 ? 0 : 150)).toLocaleString() }}
-          </span>
-        </div>
-        <button
-          @click="submitOrder"
-          :disabled="submitting"
-          class="w-full mt-4 bg-rose-primary text-white py-3 rounded-full text-sm font-medium hover:bg-rose-dark transition-colors disabled:opacity-50"
-        >
-          {{ submitting ? '處理中...' : '確認送出訂單' }}
-        </button>
-      </div>
     </div>
   </div>
 </div>

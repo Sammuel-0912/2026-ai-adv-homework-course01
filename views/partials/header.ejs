@@ -1,26 +1,117 @@
-<header class="sticky top-0 z-50 bg-white shadow-sm border-b border-rose-bg">
-  <div class="max-w-7xl mx-auto flex items-center justify-between px-4 h-16">
-    <a href="/" class="text-xl font-bold text-rose-primary" style="font-family: 'Noto Serif TC', serif;">
-      花漾生活
-    </a>
+<style>
+  .fl-navbar {
+    background: var(--cream-light);
+    border-bottom: 1px solid var(--cream-mid);
+    padding: .85rem 0;
+    transition: box-shadow .3s;
+    position: sticky; top: 0; z-index: 1000;
+  }
+  .fl-navbar.scrolled { box-shadow: 0 2px 20px rgba(107,30,42,.08); }
 
-    <nav class="flex items-center gap-6 text-sm text-text-secondary">
-      <a href="/" class="hover:text-rose-primary transition-colors">商品列表</a>
-      <a href="/cart" class="hover:text-rose-primary transition-colors relative">
-        購物車
-        <span
-          id="cart-badge"
-          class="absolute -top-2 -right-4 bg-rose-primary text-white text-xs rounded-full w-5 h-5 items-center justify-center"
-          style="display: none;"
-        ></span>
-      </a>
-      <a id="orders-link" href="/orders" class="hover:text-rose-primary transition-colors" style="display: none;">
-        我的訂單
-      </a>
-    </nav>
+  .fl-brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 500;
+    color: var(--maroon) !important;
+    letter-spacing: .06em; text-transform: uppercase;
+    text-decoration: none;
+  }
+  .fl-brand span { color: var(--gold); font-weight: 300; }
 
-    <div id="auth-nav" class="flex items-center gap-4 text-sm">
-      <a href="/login" class="bg-rose-primary text-white px-4 py-1.5 rounded-full hover:bg-rose-dark transition-colors">登入</a>
+  .fl-nav-link {
+    font-family: 'Jost', sans-serif;
+    font-size: .78rem; font-weight: 500;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: var(--charcoal) !important;
+    padding: .45rem .9rem !important;
+    text-decoration: none;
+    position: relative;
+    transition: color .2s;
+  }
+  .fl-nav-link::after {
+    content: ''; position: absolute;
+    bottom: -2px; left: .9rem; right: .9rem;
+    height: 2px; background: var(--maroon);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .25s ease;
+  }
+  .fl-nav-link:hover, .fl-nav-link.active { color: var(--maroon) !important; }
+  .fl-nav-link:hover::after, .fl-nav-link.active::after { transform: scaleX(1); }
+
+  .fl-cart-btn {
+    position: relative; background: none; border: none;
+    font-size: 1.2rem; color: var(--charcoal);
+    cursor: pointer; padding: .35rem .45rem;
+    text-decoration: none; display: inline-flex;
+    align-items: center;
+  }
+  .fl-cart-count {
+    position: absolute; top: 0; right: 0;
+    background: var(--maroon); color: #fff;
+    font-size: .55rem; font-weight: 700;
+    width: 15px; height: 15px; border-radius: 50%;
+    display: none; align-items: center; justify-content: center;
+  }
+  .navbar-toggler { border: none; color: var(--maroon); font-size: 1.3rem; }
+  .navbar-toggler:focus { box-shadow: none; }
+</style>
+
+<nav class="fl-navbar navbar navbar-expand-lg" id="flNav">
+  <div class="container">
+    <a class="fl-brand" href="/">Flower <span>Life</span></a>
+
+    <div class="d-flex align-items-center gap-2 d-lg-none">
+      <a href="/cart" class="fl-cart-btn" aria-label="購物車">
+        <i class="bi bi-bag"></i>
+        <span id="cart-badge" class="fl-cart-count"></span>
+      </a>
+      <button class="navbar-toggler" type="button"
+        data-bs-toggle="collapse" data-bs-target="#flNavMenu">
+        <i class="bi bi-list"></i>
+      </button>
+    </div>
+
+    <div class="collapse navbar-collapse" id="flNavMenu">
+      <ul class="navbar-nav mx-auto gap-1 py-2 py-lg-0">
+        <li class="nav-item">
+          <a class="fl-nav-link" href="/">花卉選購</a>
+        </li>
+        <li class="nav-item">
+          <a id="orders-link" class="fl-nav-link" href="/orders" style="display:none;">我的訂單</a>
+        </li>
+        <li class="nav-item">
+          <a class="fl-nav-link" href="/cart">購物車</a>
+        </li>
+      </ul>
+
+      <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
+        <a href="/cart" class="fl-cart-btn d-none d-lg-inline-flex" aria-label="購物車">
+          <i class="bi bi-bag"></i>
+          <span id="cart-badge-lg" class="fl-cart-count"></span>
+        </a>
+        <div id="auth-nav"></div>
+      </div>
     </div>
   </div>
-</header>
+</nav>
+
+<script>
+  // Navbar scroll effect
+  document.addEventListener('DOMContentLoaded', function () {
+    var nav = document.getElementById('flNav');
+    if (nav) {
+      window.addEventListener('scroll', function () {
+        nav.classList.toggle('scrolled', window.scrollY > 40);
+      });
+    }
+    // Sync both cart badges (mobile + desktop)
+    var mobileBadge = document.getElementById('cart-badge');
+    var desktopBadge = document.getElementById('cart-badge-lg');
+    if (mobileBadge && desktopBadge) {
+      var observer = new MutationObserver(function () {
+        desktopBadge.textContent = mobileBadge.textContent;
+        desktopBadge.style.display = mobileBadge.style.display;
+      });
+      observer.observe(mobileBadge, { childList: true, attributes: true, attributeFilter: ['style'] });
+    }
+  });
+</script>
