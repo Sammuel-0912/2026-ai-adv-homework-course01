@@ -8,9 +8,9 @@ createApp({
     const loading = ref(true);
 
     const statusMap = {
-      pending: { label: '待付款', cls: 'bg-apricot/20 text-apricot' },
-      paid: { label: '已付款', cls: 'bg-sage/20 text-sage' },
-      failed: { label: '付款失敗', cls: 'bg-red-100 text-red-600' },
+      pending: { label: '待付款', style: 'background:rgba(207,138,82,.15);color:#B8651A;' },
+      paid:    { label: '已付款', style: 'background:rgba(61,122,92,.15);color:#3D7A5C;' },
+      failed:  { label: '付款失敗', style: 'background:#fee2e2;color:#dc2626;' },
     };
 
     onMounted(async function () {
