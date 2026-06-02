@@ -38,3 +38,6 @@ coverage/
 
 .claude/*.local.json
 public/css/output.css
+
+*.png
+*.yml
