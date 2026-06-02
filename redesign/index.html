@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Flower Life — 花卉生活美學</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+  <style>
+    :root {
+      --cream:        #F7F0E6;
+      --cream-light:  #FDF9F4;
+      --cream-mid:    #EDE3D5;
+      --maroon:       #6B1E2A;
+      --maroon-dark:  #4A1219;
+      --maroon-light: #9B3A4A;
+      --maroon-mist:  #F2E8EA;
+      --gold:         #B8965A;
+      --gold-light:   #D4B07A;
+      --charcoal:     #2A1A1F;
+      --text-muted:   #7A6068;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    body {
+      font-family: 'Jost', sans-serif;
+      background-color: var(--cream-light);
+      color: var(--charcoal);
+      overflow-x: hidden;
+    }
+
+    /* ── Grain overlay ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: .028;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px;
+    }
+
+    /* ── Typography ── */
+    h1, h2, h3, h4, .font-serif {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 400;
+      letter-spacing: .01em;
+    }
+
+    /* ── Navbar ── */
+    .navbar {
+      background: var(--cream-light);
+      border-bottom: 1px solid var(--cream-mid);
+      padding: 1rem 0;
+      transition: box-shadow .3s;
+    }
+    .navbar.scrolled { box-shadow: 0 2px 20px rgba(107,30,42,.08); }
+
+    .navbar-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      font-weight: 500;
+      color: var(--maroon) !important;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+    .navbar-brand span { color: var(--gold); font-weight: 300; }
+
+    .nav-link {
+      font-family: 'Jost', sans-serif;
+      font-size: .82rem;
+      font-weight: 500;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--charcoal) !important;
+      padding: .5rem 1rem !important;
+      position: relative;
+      transition: color .2s;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 1rem; right: 1rem;
+      height: 2px;
+      background: var(--maroon);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .25s ease;
+    }
+    .nav-link:hover,
+    .nav-link.active { color: var(--maroon) !important; }
+    .nav-link:hover::after,
+    .nav-link.active::after { transform: scaleX(1); }
+
+    .navbar-toggler {
+      border: none;
+      color: var(--maroon);
+      font-size: 1.4rem;
+    }
+    .navbar-toggler:focus { box-shadow: none; }
+
+    /* ── Hero ── */
+    .hero {
+      min-height: 92vh;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      overflow: hidden;
+    }
+    @media (max-width: 767.98px) {
+      .hero { grid-template-columns: 1fr; min-height: auto; }
+    }
+
+    .hero-content {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 6rem 4rem 6rem 5vw;
+      background: var(--cream-light);
+    }
+    @media (max-width: 991.98px) {
+      .hero-content { padding: 4rem 2rem; }
+    }
+
+    .hero-eyebrow {
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: .7rem;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: inline-block;
+      width: 32px;
+      height: 1px;
+      background: var(--gold);
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      line-height: 1.05;
+      color: var(--charcoal);
+      margin-bottom: 1.8rem;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--maroon);
+    }
+
+    .hero-desc {
+      font-size: 1rem;
+      line-height: 1.75;
+      color: var(--text-muted);
+      max-width: 400px;
+      margin-bottom: 2.5rem;
+    }
+
+    .hero-image {
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-image img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 8s ease;
+    }
+    .hero-image:hover img { transform: scale(1.04); }
+    .hero-image::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(107,30,42,.15) 0%, transparent 60%);
+    }
+
+    .hero-badge {
+      position: absolute;
+      bottom: 2rem; left: 2rem;
+      background: var(--cream-light);
+      border: 1px solid var(--cream-mid);
+      border-radius: 2px;
+      padding: 1rem 1.4rem;
+      z-index: 2;
+      font-family: 'Cormorant Garamond', serif;
+    }
+    .hero-badge .number {
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--maroon);
+      line-height: 1;
+    }
+    .hero-badge .label {
+      font-size: .75rem;
+      color: var(--text-muted);
+      letter-spacing: .08em;
+    }
+
+    /* ── Buttons ── */
+    .btn-maroon {
+      background: var(--maroon);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: .9rem 2rem;
+      transition: background .2s, transform .15s;
+    }
+    .btn-maroon:hover {
+      background: var(--maroon-dark);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .btn-outline-maroon {
+      background: transparent;
+      color: var(--maroon);
+      border: 1.5px solid var(--maroon);
+      border-radius: 2px;
+      font-size: .8rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      padding: .85rem 2rem;
+      transition: background .2s, color .2s, transform .15s;
+    }
+    .btn-outline-maroon:hover {
+      background: var(--maroon);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    /* ── Section Headers ── */
+    .section-header { margin-bottom: 3.5rem; }
+    .section-eyebrow {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .6rem;
+    }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      color: var(--charcoal);
+      margin-bottom: .8rem;
+    }
+    .section-divider {
+      width: 40px; height: 2px;
+      background: var(--maroon);
+      margin: 1rem 0 0;
+    }
+
+    /* ── Product Cards ── */
+    .product-card {
+      background: #fff;
+      border: 1px solid var(--cream-mid);
+      border-radius: 3px;
+      overflow: hidden;
+      transition: box-shadow .3s, transform .3s;
+      cursor: pointer;
+    }
+    .product-card:hover {
+      box-shadow: 0 12px 40px rgba(107,30,42,.12);
+      transform: translateY(-4px);
+    }
+
+    .product-img-wrap {
+      position: relative;
+      overflow: hidden;
+      aspect-ratio: 4/5;
+    }
+    .product-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .6s ease;
+    }
+    .product-card:hover .product-img-wrap img { transform: scale(1.06); }
+
+    .product-badge {
+      position: absolute;
+      top: 1rem; left: 1rem;
+      background: var(--maroon);
+      color: #fff;
+      font-size: .65rem;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      padding: .25rem .7rem;
+      border-radius: 2px;
+    }
+
+    .product-actions {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+      opacity: 0;
+      transform: translateX(10px);
+      transition: opacity .25s, transform .25s;
+    }
+    .product-card:hover .product-actions { opacity: 1; transform: translateX(0); }
+
+    .product-action-btn {
+      width: 38px; height: 38px;
+      background: #fff;
+      border: none;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: var(--charcoal);
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
+      transition: background .2s, color .2s;
+      cursor: pointer;
+    }
+    .product-action-btn:hover {
+      background: var(--maroon);
+      color: #fff;
+    }
+
+    .product-info { padding: 1.2rem 1.4rem 1.6rem; }
+    .product-category {
+      font-size: .68rem;
+      font-weight: 600;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: .35rem;
+    }
+    .product-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.2rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: .5rem;
+      line-height: 1.3;
+    }
+    .product-price {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--maroon);
+    }
+    .product-price-old {
+      font-size: .85rem;
+      color: var(--text-muted);
+      text-decoration: line-through;
+      margin-left: .5rem;
+      font-weight: 400;
+    }
+
+    .add-to-cart-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: .8rem;
+      border-top: 1px solid var(--cream-mid);
+      margin-top: .8rem;
+    }
+
+    /* ── Banner Strip ── */
+    .banner-strip {
+      background: var(--maroon);
+      color: rgba(255,255,255,.88);
+      font-size: .75rem;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      text-align: center;
+      padding: .65rem 1rem;
+    }
+
+    /* ── Category Section ── */
+    .category-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 3px;
+      aspect-ratio: 3/4;
+      cursor: pointer;
+    }
+    .category-card img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform .7s ease;
+    }
+    .category-card:hover img { transform: scale(1.08); }
+    .category-card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(42,26,31,.7) 0%, transparent 55%);
+    }
+    .category-info {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 1.8rem 1.5rem;
+      z-index: 2;
+      color: #fff;
+    }
+    .category-info h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      margin-bottom: .25rem;
+    }
+    .category-info p { font-size: .78rem; opacity: .8; margin: 0; letter-spacing: .06em; }
+
+    /* ── Story Section ── */
+    .story-section {
+      background: var(--cream);
+      position: relative;
+      overflow: hidden;
+    }
+    .story-section::before {
+      content: 'FLOWER';
+      position: absolute;
+      top: 50%; left: -2rem;
+      transform: translateY(-50%) rotate(-90deg);
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 8rem;
+      font-weight: 300;
+      color: rgba(107,30,42,.05);
+      pointer-events: none;
+      white-space: nowrap;
+      letter-spacing: .2em;
+    }
+
+    .story-img-grid {
+      display: grid;
+      grid-template-columns: 3fr 2fr;
+      grid-template-rows: auto auto;
+      gap: 1rem;
+    }
+    .story-img-grid img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    .story-img-main { grid-row: span 2; min-height: 480px; }
+    .story-img-sm { height: 220px; }
+
+    /* ── Newsletter ── */
+    .newsletter-section {
+      background: var(--maroon-dark);
+      color: #fff;
+      position: relative;
+      overflow: hidden;
+    }
+    .newsletter-section::before {
+      content: '';
+      position: absolute;
+      top: -80px; right: -80px;
+      width: 400px; height: 400px;
+      border-radius: 50%;
+      background: rgba(184,150,90,.08);
+    }
+    .newsletter-section::after {
+      content: '';
+      position: absolute;
+      bottom: -60px; left: -60px;
+      width: 300px; height: 300px;
+      border-radius: 50%;
+      background: rgba(184,150,90,.06);
+    }
+
+    .newsletter-input {
+      background: rgba(255,255,255,.1);
+      border: 1px solid rgba(255,255,255,.2);
+      color: #fff;
+      border-radius: 2px 0 0 2px;
+      padding: .85rem 1.2rem;
+      font-size: .9rem;
+    }
+    .newsletter-input::placeholder { color: rgba(255,255,255,.5); }
+    .newsletter-input:focus {
+      outline: none;
+      background: rgba(255,255,255,.15);
+      border-color: var(--gold-light);
+      box-shadow: none;
+      color: #fff;
+    }
+
+    .btn-gold {
+      background: var(--gold);
+      color: #fff;
+      border: none;
+      border-radius: 0 2px 2px 0;
+      font-size: .78rem;
+      font-weight: 600;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      padding: .85rem 1.6rem;
+      white-space: nowrap;
+      transition: background .2s;
+    }
+    .btn-gold:hover { background: var(--gold-light); color: #fff; }
+
+    /* ── Footer ── */
+    footer {
+      background: var(--charcoal);
+      color: rgba(255,255,255,.65);
+      padding: 4rem 0 2rem;
+    }
+    .footer-brand {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      color: #fff;
+      letter-spacing: .08em;
+    }
+    .footer-brand span { color: var(--gold); }
+    .footer-desc { font-size: .88rem; line-height: 1.7; margin-top: .8rem; }
+    .footer-heading {
+      font-size: .72rem;
+      font-weight: 600;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.45);
+      margin-bottom: 1.2rem;
+    }
+    .footer-link {
+      display: block;
+      font-size: .88rem;
+      color: rgba(255,255,255,.65);
+      text-decoration: none;
+      margin-bottom: .55rem;
+      transition: color .2s;
+    }
+    .footer-link:hover { color: var(--gold); }
+    .footer-divider {
+      border-color: rgba(255,255,255,.1);
+      margin: 2.5rem 0 1.5rem;
+    }
+    .footer-social a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 36px; height: 36px;
+      border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50%;
+      color: rgba(255,255,255,.6);
+      text-decoration: none;
+      font-size: 1rem;
+      margin-right: .5rem;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .footer-social a:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+      background: rgba(184,150,90,.1);
+    }
+
+    /* ── Cart badge ── */
+    .cart-btn {
+      position: relative;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: var(--charcoal);
+      cursor: pointer;
+      padding: .4rem .5rem;
+    }
+    .cart-count {
+      position: absolute;
+      top: 0; right: 0;
+      background: var(--maroon);
+      color: #fff;
+      font-size: .6rem;
+      font-weight: 700;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp .7s ease both; }
+    .delay-1 { animation-delay: .15s; }
+    .delay-2 { animation-delay: .3s; }
+    .delay-3 { animation-delay: .45s; }
+    .delay-4 { animation-delay: .6s; }
+
+    @keyframes slideInRight {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .slide-right { animation: slideInRight .8s ease both; animation-delay: .2s; }
+
+    /* ── Responsive adjustments ── */
+    @media (max-width: 767.98px) {
+      .hero-content { order: 2; padding: 3rem 1.5rem 4rem; }
+      .hero-image { order: 1; min-height: 55vw; }
+      .story-img-grid { grid-template-columns: 1fr; }
+      .story-img-main { min-height: 300px; grid-row: auto; }
+      .story-img-sm { height: 180px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Banner Strip -->
+  <div class="banner-strip">
+    <i class="bi bi-flower1 me-2"></i>
+    全台免費配送，訂單滿 NT$800 即享優惠
+    <i class="bi bi-flower1 ms-2"></i>
+  </div>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg sticky-top" id="mainNav">
+    <div class="container">
+      <a class="navbar-brand" href="index.html">
+        Flower <span>Life</span>
+      </a>
+
+      <div class="d-flex align-items-center gap-2 d-lg-none">
+        <button class="cart-btn" aria-label="購物車">
+          <i class="bi bi-bag"></i>
+          <span class="cart-count">2</span>
+        </button>
+        <button class="navbar-toggler" type="button"
+          data-bs-toggle="collapse" data-bs-target="#navMenu">
+          <i class="bi bi-list"></i>
+        </button>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navMenu">
+        <ul class="navbar-nav mx-auto gap-1">
+          <li class="nav-item"><a class="nav-link active" href="index.html">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="products.html">花卉精選</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">花藝課程</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">關於我們</a></li>
+        </ul>
+        <div class="d-flex align-items-center gap-3">
+          <button class="cart-btn d-none d-lg-flex" aria-label="購物車">
+            <i class="bi bi-bag"></i>
+            <span class="cart-count">2</span>
+          </button>
+          <a href="login.html" class="btn btn-outline-maroon btn-sm py-2 px-3">登入</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="hero-eyebrow fade-up">2026 春季新品</div>
+      <h1 class="hero-title fade-up delay-1">
+        為生活注入<br /><em>花的溫柔</em>
+      </h1>
+      <p class="hero-desc fade-up delay-2">
+        精選來自台灣各地的當季鮮花，從玫瑰到百合，讓每一朵花都訴說屬於你的故事。
+      </p>
+      <div class="d-flex flex-wrap gap-3 fade-up delay-3">
+        <a href="products.html" class="btn btn-maroon">探索花卉</a>
+        <a href="#" class="btn btn-outline-maroon">了解更多</a>
+      </div>
+      <div class="d-flex gap-4 mt-4 fade-up delay-4">
+        <div>
+          <div class="fw-600" style="font-size:1.4rem;color:var(--maroon);font-family:'Cormorant Garamond',serif;">500+</div>
+          <div style="font-size:.72rem;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;">花卉品種</div>
+        </div>
+        <div style="width:1px;background:var(--cream-mid)"></div>
+        <div>
+          <div class="fw-600" style="font-size:1.4rem;color:var(--maroon);font-family:'Cormorant Garamond',serif;">4.9★</div>
+          <div style="font-size:.72rem;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;">顧客評分</div>
+        </div>
+        <div style="width:1px;background:var(--cream-mid)"></div>
+        <div>
+          <div class="fw-600" style="font-size:1.4rem;color:var(--maroon);font-family:'Cormorant Garamond',serif;">24H</div>
+          <div style="font-size:.72rem;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase;">新鮮配送</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-image slide-right">
+      <img src="https://images.unsplash.com/photo-1490750967868-88df5691cc71?w=900&q=80"
+        alt="Hero flower" />
+      <div class="hero-badge">
+        <div class="number">99</div>
+        <div class="label">朵玫瑰禮盒</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="py-6" style="padding: 5rem 0; background: var(--cream-light);">
+    <div class="container">
+      <div class="row align-items-end section-header mb-5">
+        <div class="col-lg-6">
+          <div class="section-eyebrow">本週精選</div>
+          <h2 class="section-title">人氣花卉推薦</h2>
+          <div class="section-divider"></div>
+        </div>
+        <div class="col-lg-6 text-lg-end mt-3 mt-lg-0">
+          <a href="products.html" class="btn btn-outline-maroon">
+            瀏覽全部 <i class="bi bi-arrow-right ms-1"></i>
+          </a>
+        </div>
+      </div>
+
+      <div class="row g-4">
+        <!-- Product 1 -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="product-detail.html" class="text-decoration-none">
+            <div class="product-card">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1562690868-60bbe7293e94?w=400&q=80" alt="粉色玫瑰" />
+                <span class="product-badge">熱銷</span>
+                <div class="product-actions">
+                  <button class="product-action-btn" title="加入願望清單"><i class="bi bi-heart"></i></button>
+                  <button class="product-action-btn" title="快速查看"><i class="bi bi-eye"></i></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <div class="product-category">玫瑰系列</div>
+                <div class="product-name">粉色玫瑰花束</div>
+                <div class="add-to-cart-bar">
+                  <div>
+                    <span class="product-price">NT$ 1,680</span>
+                  </div>
+                  <button class="btn btn-maroon btn-sm py-1 px-2" style="font-size:.68rem;">
+                    <i class="bi bi-bag-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Product 2 -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="product-detail.html" class="text-decoration-none">
+            <div class="product-card">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1508610048659-a06b669e3321?w=400&q=80" alt="白色百合" />
+                <div class="product-actions">
+                  <button class="product-action-btn" title="加入願望清單"><i class="bi bi-heart"></i></button>
+                  <button class="product-action-btn" title="快速查看"><i class="bi bi-eye"></i></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <div class="product-category">百合系列</div>
+                <div class="product-name">白色百合花禮盒</div>
+                <div class="add-to-cart-bar">
+                  <div>
+                    <span class="product-price">NT$ 1,280</span>
+                  </div>
+                  <button class="btn btn-maroon btn-sm py-1 px-2" style="font-size:.68rem;">
+                    <i class="bi bi-bag-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Product 3 -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="product-detail.html" class="text-decoration-none">
+            <div class="product-card">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1470509037663-253afd7f0f51?w=400&q=80" alt="向日葵" />
+                <span class="product-badge">新品</span>
+                <div class="product-actions">
+                  <button class="product-action-btn" title="加入願望清單"><i class="bi bi-heart"></i></button>
+                  <button class="product-action-btn" title="快速查看"><i class="bi bi-eye"></i></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <div class="product-category">向日葵系列</div>
+                <div class="product-name">繽紛向日葵花束</div>
+                <div class="add-to-cart-bar">
+                  <div>
+                    <span class="product-price">NT$ 980</span>
+                  </div>
+                  <button class="btn btn-maroon btn-sm py-1 px-2" style="font-size:.68rem;">
+                    <i class="bi bi-bag-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <!-- Product 4 -->
+        <div class="col-6 col-md-4 col-lg-3">
+          <a href="product-detail.html" class="text-decoration-none">
+            <div class="product-card">
+              <div class="product-img-wrap">
+                <img src="https://images.unsplash.com/photo-1519378058457-4c29a0a2efac?w=400&q=80" alt="乾燥花圈" />
+                <div class="product-actions">
+                  <button class="product-action-btn" title="加入願望清單"><i class="bi bi-heart"></i></button>
+                  <button class="product-action-btn" title="快速查看"><i class="bi bi-eye"></i></button>
+                </div>
+              </div>
+              <div class="product-info">
+                <div class="product-category">乾燥花系列</div>
+                <div class="product-name">乾燥花藝術花圈</div>
+                <div class="add-to-cart-bar">
+                  <div>
+                    <span class="product-price">NT$ 1,450</span>
+                  </div>
+                  <button class="btn btn-maroon btn-sm py-1 px-2" style="font-size:.68rem;">
+                    <i class="bi bi-bag-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories -->
+  <section style="padding: 5rem 0; background: var(--cream);">
+    <div class="container">
+      <div class="section-header text-center" style="margin-bottom:3rem;">
+        <div class="section-eyebrow">依情境選購</div>
+        <h2 class="section-title">花藝生活分類</h2>
+        <div class="section-divider mx-auto"></div>
+      </div>
+      <div class="row g-3">
+        <div class="col-12 col-md-5">
+          <div class="category-card" style="aspect-ratio:unset;min-height:420px;">
+            <img src="https://images.unsplash.com/photo-1495360010541-f48722b34f7d?w=700&q=80" alt="婚禮花藝" />
+            <div class="category-info">
+              <h4>婚禮花藝</h4>
+              <p>WEDDING FLORALS — 36 件商品</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-12 col-md-7">
+          <div class="row g-3 h-100">
+            <div class="col-6">
+              <div class="category-card" style="min-height:195px;">
+                <img src="https://images.unsplash.com/photo-1453450375977-3d0f90a4c1c3?w=400&q=80" alt="生日禮花" />
+                <div class="category-info">
+                  <h4>生日禮花</h4>
+                  <p>BIRTHDAY — 24 件</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="category-card" style="min-height:195px;">
+                <img src="https://images.unsplash.com/photo-1416339134316-0e91dc9ded92?w=400&q=80" alt="盆栽植物" />
+                <div class="category-info">
+                  <h4>盆栽植物</h4>
+                  <p>PLANTS — 18 件</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="category-card" style="min-height:200px;">
+                <img src="https://images.unsplash.com/photo-1596449878941-6db1869cf793?w=700&q=80" alt="季節訂閱" />
+                <div class="category-info">
+                  <h4>季節訂閱</h4>
+                  <p>SEASONAL SUBSCRIPTION — 每月精選送到家</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Story Section -->
+  <section class="story-section" style="padding: 6rem 0;">
+    <div class="container">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6 order-lg-2">
+          <div class="story-img-grid">
+            <div class="story-img-main">
+              <img src="https://images.unsplash.com/photo-1520412099551-62b6bafeb5bb?w=600&q=80" alt="花藝師" />
+            </div>
+            <img class="story-img-sm" src="https://images.unsplash.com/photo-1487530811015-780f780d0b67?w=400&q=80" alt="花束製作" />
+            <img class="story-img-sm" src="https://images.unsplash.com/photo-1500479694472-551d1fb6258d?w=400&q=80" alt="包裝細節" />
+          </div>
+        </div>
+        <div class="col-lg-6 order-lg-1">
+          <div class="section-eyebrow">我們的故事</div>
+          <h2 class="section-title">用心栽培<br />每一束感動</h2>
+          <div class="section-divider mb-4"></div>
+          <p style="color:var(--text-muted);line-height:1.85;font-size:.95rem;margin-bottom:1.5rem;">
+            Flower Life 創立於 2018 年，我們相信每一朵花都蘊含著大自然的溫柔訊息。
+            與台灣各地花農直接合作，確保每一束花都在最新鮮的狀態送達您的手中。
+          </p>
+          <p style="color:var(--text-muted);line-height:1.85;font-size:.95rem;margin-bottom:2rem;">
+            從田間到您的手中，我們嚴格把關每個環節，讓花的美好完整呈現。
+          </p>
+          <div class="d-flex gap-4 mb-4">
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--maroon);">8+</div>
+              <div style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);">年的堅持</div>
+            </div>
+            <div style="width:1px;background:var(--cream-mid)"></div>
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--maroon);">50+</div>
+              <div style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);">合作農場</div>
+            </div>
+            <div style="width:1px;background:var(--cream-mid)"></div>
+            <div>
+              <div style="font-family:'Cormorant Garamond',serif;font-size:2.4rem;color:var(--maroon);">12K+</div>
+              <div style="font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted);">滿意顧客</div>
+            </div>
+          </div>
+          <a href="#" class="btn btn-maroon">探索我們的故事</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Testimonials -->
+  <section style="padding:5rem 0;background:var(--cream-light);">
+    <div class="container">
+      <div class="text-center section-header">
+        <div class="section-eyebrow">顧客回饋</div>
+        <h2 class="section-title">每一個笑容都是我們的動力</h2>
+        <div class="section-divider mx-auto"></div>
+      </div>
+      <div class="row g-4 mt-2">
+        <div class="col-md-4">
+          <div style="background:#fff;border:1px solid var(--cream-mid);border-radius:3px;padding:2rem;">
+            <div style="color:var(--gold);font-size:1rem;margin-bottom:1rem;">★★★★★</div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--charcoal);line-height:1.7;margin-bottom:1.2rem;">
+              "花束包裝精美，花朵非常新鮮！送給媽媽生日，她感動到哭了。"
+            </p>
+            <div style="font-size:.82rem;color:var(--text-muted);font-weight:600;">— 林小姐，台北</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div style="background:var(--maroon);border-radius:3px;padding:2rem;">
+            <div style="color:var(--gold-light);font-size:1rem;margin-bottom:1rem;">★★★★★</div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:rgba(255,255,255,.9);line-height:1.7;margin-bottom:1.2rem;">
+              "婚禮花藝服務超棒，花藝師非常專業，整個會場美到不行！"
+            </p>
+            <div style="font-size:.82rem;color:rgba(255,255,255,.6);font-weight:600;">— 陳先生 & 王小姐，新婚</div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div style="background:#fff;border:1px solid var(--cream-mid);border-radius:3px;padding:2rem;">
+            <div style="color:var(--gold);font-size:1rem;margin-bottom:1rem;">★★★★★</div>
+            <p style="font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-style:italic;color:var(--charcoal);line-height:1.7;margin-bottom:1.2rem;">
+              "訂閱方案太值了！每週一束新鮮的花，讓家裡充滿香氣和美麗。"
+            </p>
+            <div style="font-size:.82rem;color:var(--text-muted);font-weight:600;">— 張太太，台中</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Newsletter -->
+  <section class="newsletter-section" style="padding:5rem 0;">
+    <div class="container position-relative" style="z-index:2;">
+      <div class="row justify-content-center text-center">
+        <div class="col-lg-6">
+          <div class="section-eyebrow" style="color:var(--gold);">訂閱電子報</div>
+          <h2 style="font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,4vw,3rem);color:#fff;margin-bottom:1rem;">
+            第一手掌握花卉新品
+          </h2>
+          <p style="color:rgba(255,255,255,.65);font-size:.95rem;margin-bottom:2rem;">
+            訂閱即享首購 9 折優惠碼，並定期收到花藝教學與季節花訊。
+          </p>
+          <div class="d-flex">
+            <input type="email" class="form-control newsletter-input flex-grow-1"
+              placeholder="輸入您的 Email" />
+            <button class="btn btn-gold">訂閱</button>
+          </div>
+          <p style="font-size:.72rem;color:rgba(255,255,255,.4);margin-top:.8rem;">
+            我們尊重您的隱私，隨時可取消訂閱。
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <div class="row g-5">
+        <div class="col-lg-4">
+          <div class="footer-brand">Flower <span>Life</span></div>
+          <p class="footer-desc">
+            用最純粹的心意，傳遞每一束花的溫柔。我們相信美好的花藝，能讓生活更有詩意。
+          </p>
+          <div class="footer-social mt-3">
+            <a href="#"><i class="bi bi-instagram"></i></a>
+            <a href="#"><i class="bi bi-facebook"></i></a>
+            <a href="#"><i class="bi bi-line"></i></a>
+          </div>
+        </div>
+        <div class="col-6 col-lg-2 offset-lg-1">
+          <div class="footer-heading">購物</div>
+          <a href="products.html" class="footer-link">花卉精選</a>
+          <a href="#" class="footer-link">婚禮花藝</a>
+          <a href="#" class="footer-link">季節訂閱</a>
+          <a href="#" class="footer-link">盆栽植物</a>
+          <a href="#" class="footer-link">乾燥花</a>
+        </div>
+        <div class="col-6 col-lg-2">
+          <div class="footer-heading">服務</div>
+          <a href="#" class="footer-link">關於我們</a>
+          <a href="#" class="footer-link">常見問題</a>
+          <a href="#" class="footer-link">配送說明</a>
+          <a href="#" class="footer-link">退換貨政策</a>
+          <a href="#" class="footer-link">聯絡我們</a>
+        </div>
+        <div class="col-lg-3">
+          <div class="footer-heading">聯絡資訊</div>
+          <p style="font-size:.85rem;line-height:1.9;">
+            <i class="bi bi-geo-alt me-1" style="color:var(--gold);"></i> 台北市大安區仁愛路 123 號<br />
+            <i class="bi bi-telephone me-1" style="color:var(--gold);"></i> (02) 2345-6789<br />
+            <i class="bi bi-envelope me-1" style="color:var(--gold);"></i> hello@flowerlife.tw<br />
+            <i class="bi bi-clock me-1" style="color:var(--gold);"></i> 週一 ~ 週日 9:00 – 18:00
+          </p>
+        </div>
+      </div>
+      <hr class="footer-divider" />
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+        <p style="font-size:.8rem;color:rgba(255,255,255,.35);margin:0;">
+          © 2026 Flower Life. All rights reserved.
+        </p>
+        <div style="font-size:.78rem;color:rgba(255,255,255,.35);">
+          <a href="#" class="footer-link d-inline me-3">隱私政策</a>
+          <a href="#" class="footer-link d-inline">使用條款</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    // Navbar scroll effect
+    const nav = document.getElementById('mainNav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 40);
+    });
+  </script>
+</body>
+</html>
